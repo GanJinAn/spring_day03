@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--使用aop-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop" xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--首先要使用aop注解方式，需要开启aop操作-->
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+
+    <!--1、配置对象-->
+    <bean id="book" class="com.ahn.aop.Book"></bean>
+    <bean id="myBook" class="com.ahn.aop.MyBook"></bean>
+
+    <!--使用c3p0配置数据库连接池-->
+    <!--原始代码
+        ComboPooledDataSource dataSource=new ComboPooledDataSource();
+        dataSource.setDriverClass("com.mysql.jdbc.Driver");
+        dataSource.setJdbcUrl("jdbc:mysql:///springdb");
+        dataSource.setUser("root");
+        dataSource.setPassword("root");-->
+    <!--创建对象-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!--注入属性值-->
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql:///springdb"></property>
+        <property name="user" value="root"></property>
+        <property name="password" value="root"></property>
+    </bean>
+
+    <!--创建对象-->
+    <bean id="userService" class="com.ahn.c3p0.UserService">
+        <!--注入属性dao对象-->
+        <property name="userDao" ref="userDao"></property>
+    </bean>
+    <bean id="userDao" class="com.ahn.c3p0.UserDao">
+        <!--在dao中获得jdbcTemplate对象-->
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <!--把dataSource注入到模板里面去-->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+</beans>
